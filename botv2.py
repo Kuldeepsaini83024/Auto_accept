@@ -121,25 +121,26 @@ async def autoapprove(client: thanos, message: ChatJoinRequest):
         await client.approve_chat_join_request(chat_id=message.chat.id, user_id=message.from_user.id)
 
         await client.send_photo(
-            chat_id=message.from_user.id,
-            photo=LOGO_URL,
-            caption=( = (
-    f"👋 𝗛𝗲𝗹𝗹𝗼 {message.from_user.mention}, Welcome to the Learning Zone! \n\n"
-    "🔰 𝗪𝗵𝗮𝘁 𝗬𝗼𝘂 𝗪𝗶𝗹𝗹 𝗚𝗲𝘁 𝗛𝗲𝗿𝗲?\n"
-    "1⃣ Quality Notes for Your Exam Preparation\n"
-    "2⃣ Free Live / Recorded Classes\n"
-    "3⃣ Study Materials, PDFs, and Practice Sets\n\n"
-    "✊ 𝗝𝗼𝗶𝗻 𝗼𝘂𝗿 𝗘𝗱𝘂𝗰𝗮𝘁𝗶𝗼𝗻 𝗖𝗼𝗺𝗺𝘂𝗻𝗶𝘁𝘆 — <b>𝙎𝘼𝙄𝙉𝙄 𝙎𝘼𝙃𝘼𝘽</b>\n"
-    "1⃣ Doubts clear karo aur sawal puchho\n"
-    "2⃣ Important updates aur tips har roz pao\n"
-    "3⃣ Apne jaise students ke saath interact karo\n\n"
-    "♥️ Join Now and Start Learning 👇\n"
-    '<a href="https://t.me/saini_sahab19">𝙎𝘼𝙄𝙉𝙄 𝙎𝘼𝙃𝘼𝘽</a>\n'
-    '<a href="https://t.me/saini_sahab_19">𝙎𝘼𝙄𝙉𝙄 𝙎𝘼𝙃𝘼𝘽</a>\n'
-    '<a href="https://t.me/saini_sahab19">𝙎𝘼𝙄𝙉𝙄 𝙎𝘼𝙃𝘼𝘽</a>\n\n'
-    "📌 Type /start to explore more study tools and resources!"
-            )
-        )
+    chat_id=message.from_user.id,
+    photo=LOGO_URL,
+    caption=(
+        f"👋 𝗛𝗲𝗹𝗹𝗼 {message.from_user.mention}, Welcome to the Learning Zone! \n\n"
+        "🔰 𝗪𝗵𝗮𝘁 𝗬𝗼𝘂 𝗪𝗶𝗹𝗹 𝗚𝗲𝘁 𝗛𝗲𝗿𝗲?\n"
+        "1⃣ Quality Notes for Your Exam Preparation\n"
+        "2⃣ Free Live / Recorded Classes\n"
+        "3⃣ Study Materials, PDFs, and Practice Sets\n\n"
+        "✊ 𝗝𝗼𝗶𝗻 𝗼𝘂𝗿 𝗘𝗱𝘂𝗰𝗮𝘁𝗶𝗼𝗻 𝗖𝗼𝗺𝗺𝘂𝗻𝗶𝘁𝘆 — <b>𝙎𝘼𝙄𝙉𝙄 𝙎𝘼𝙃𝘼𝘽</b>\n"
+        "1⃣ Doubts clear karo aur sawal puchho\n"
+        "2⃣ Important updates aur tips har roz pao\n"
+        "3⃣ Apne jaise students ke saath interact karo\n\n"
+        "♥️ Join Now and Start Learning 👇\n"
+        '<a href="https://t.me/saini_sahab19">𝙎𝘼𝙄𝙉𝙄 𝙎𝘼𝙃𝘼𝘽</a>\n'
+        '<a href="https://t.me/saini_sahab_19">𝙎𝘼𝙄𝙉𝙄 𝙎𝘼𝙃𝘼𝘽</a>\n'
+        '<a href="https://t.me/saini_sahab19">𝙎𝘼𝙄𝙉𝙄 𝙎𝘼𝙃𝘼𝘽</a>\n\n'
+        "📌 Type /start to explore more study tools and resources!"
+    ),
+    parse_mode="HTML"
+)
     except Exception as e:
         logger.error(f"autoapprove error: {e}")
 
