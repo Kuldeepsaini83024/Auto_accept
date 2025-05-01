@@ -1,8 +1,9 @@
-#.this version have a ability to send pictures in dms
 import os
 import json
 import logging
 import asyncio
+from threading import Thread
+from flask import Flask
 
 from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message, ChatMemberUpdated, ChatJoinRequest
@@ -17,11 +18,11 @@ LOGO_URL = "https://graph.org/file/98a15d8ecbd89eb30f7aa.jpg"
 USER_DATA_FILE = "user_data.json"
 GROUP_DATA_FILE = "group_data.json"
 
-# Set up logging
+# Logging setup
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Initialize the bot
+# Pyrogram bot client
 thanos = Client(
     "bot_started",
     bot_token=B_TOKEN,
@@ -29,27 +30,27 @@ thanos = Client(
     api_hash=API_HASH
 )
 
-# Connect to MongoDB
+# MongoDB connect
 try:
     mongo = AsyncClient(DB_URI)
     db = mongo["Assistant"]
-    logger.info("Connected to your Mongo Database.")
+    logger.info("Connected to Mongo Database.")
 except Exception as e:
-    logger.error(f"Failed to connect to your Mongo Database: {e}")
+    logger.error(f"MongoDB connection failed: {e}")
     exit(1)
 
 usersdb = db["users"]
 
-# Helper functions
+# Load/Save helpers
 def load_data(file_path):
     if os.path.exists(file_path):
-        with open(file_path, "r") as file:
-            return json.load(file)
+        with open(file_path, "r") as f:
+            return json.load(f)
     return []
 
 def save_data(data, file_path):
-    with open(file_path, "w") as file:
-        json.dump(data, file, indent=4)
+    with open(file_path, "w") as f:
+        json.dump(data, f, indent=4)
 
 user_data = load_data(USER_DATA_FILE)
 group_data = load_data(GROUP_DATA_FILE)
@@ -64,30 +65,21 @@ def add_to_data(data_list, new_entry, file_path):
 async def start(client: Client, message: Message):
     try:
         await add_served_user(message.from_user.id)
-        logger.info(f"Added user {message.from_user.id} to the database.")
+        logger.info(f"User {message.from_user.id} added.")
 
         button = [
             [InlineKeyboardButton("ᴀᴅᴅ ᴍᴇ", url=f"https://t.me/{BOT_USERNAME}?startgroup=true")]
         ]
 
-        # Test if the bot can send a simple text message
-        # await client.send_message(
-        #    chat_id=message.chat.id,
-        #    text="Bot is working! This is a test message."
-        # )
-
-        # Uncomment this part after confirming the bot can send messages
         await client.send_photo(
             chat_id=message.chat.id,
             photo=LOGO_URL,
             caption="**HELLO...⚡\n\ni am an advanced telegram auto request accept bot.**",
             reply_markup=InlineKeyboardMarkup(button)
         )
-
-        logger.info(f"Sent start message to user {message.from_user.id}.")
     except Exception as e:
-        logger.error(f"Error in start handler: {e}")
-        await message.reply_text(f"An error occurred: {e}")
+        logger.error(f"Start handler error: {e}")
+        await message.reply_text(f"Error occurred: {e}")
 
 @thanos.on_chat_member_updated(filters.group)
 async def welcome_goodbye(client: thanos, message: ChatMemberUpdated):
@@ -96,111 +88,94 @@ async def welcome_goodbye(client: thanos, message: ChatMemberUpdated):
         old_chat_member = message.old_chat_member
         chat = message.chat
 
-        if new_chat_member:
-            if new_chat_member.status == "member":
-                add_to_data(group_data, chat.id, GROUP_DATA_FILE)
-                user = new_chat_member.user
-                logger.info(f"{user.first_name} joined {chat.title}")
-                await client.send_message(
-                    chat_id=chat.id,
-                    text=f"Hello {user.mention}, welcome to {chat.title}!"
-                )
-        elif old_chat_member:
-            if old_chat_member.status == "left":
-                user = old_chat_member.user
-                logger.info(f"{user.first_name} left {chat.title}")
-                await client.send_message(
-                    chat_id=chat.id,
-                    text=f"Goodbye {user.mention}, we will miss you in {chat.title}!"
-                )
+        if new_chat_member and new_chat_member.status == "member":
+            add_to_data(group_data, chat.id, GROUP_DATA_FILE)
+            user = new_chat_member.user
+            await client.send_message(
+                chat_id=chat.id,
+                text=f"Hello {user.mention}, welcome to {chat.title}!"
+            )
 
-                personal_goodbye_message = (
+        elif old_chat_member and old_chat_member.status == "left":
+            user = old_chat_member.user
+            await client.send_message(
+                chat_id=chat.id,
+                text=f"Goodbye {user.mention}, we will miss you!"
+            )
+            await client.send_photo(
+                chat_id=user.id,
+                photo=LOGO_URL,
+                caption=(
                     "⚠️ Sorry for the inconvenience caused\n"
                     "🚨 You Can Request any Anime here\n"
-                    "👉 https://t.me/SonuBhaiyaBot\n"
-                    "🛎️ Koi bhi Help ke liye msg here ☝️"
+                    "👉 https://t.me/saini_sahab19 \n"
+                    "🛎️ Help? Msg above bot."
                 )
-
-                await client.send_photo(
-                    chat_id=user.id,
-                    photo=LOGO_URL,
-                    caption=personal_goodbye_message
-                )
+            )
     except Exception as e:
-        logger.error(f"Error in welcome_goodbye handler: {e}")
+        logger.error(f"welcome_goodbye error: {e}")
 
 @thanos.on_chat_join_request()
 async def autoapprove(client: thanos, message: ChatJoinRequest):
     try:
         await client.approve_chat_join_request(chat_id=message.chat.id, user_id=message.from_user.id)
-        logger.info(f"Approved join request for {message.from_user.first_name} in {message.chat.title}")
-
-        personal_message = (
-            f"💋𝙅𝙤𝙞𝙣 𝙁𝙤𝙧 𝙇𝙖𝙩𝙚𝙨𝙩 𝘾𝙤𝙡𝙡𝙚𝙘𝙩𝙞𝙤𝙣💋\n\n"
-            "• https://discord.com/invite/5ACnAvC2et\n"
-            "• https://discord.com/invite/5ACnAvC2et\n"
-            "• https://discord.com/invite/5ACnAvC2et\n"
-            "• https://discord.com/invite/5ACnAvC2et\n\n"
-            "🎬Click Here to learn how to login in Discord\n\n"
-            "@HowToUse_Discord\n"
-            "@HowToUse_Discord\n\n"
-            "🎬डिस्कॉर्ड में लॉगइन करने का तरीका जानने के लिए यहां क्लिक करें"
-        )
 
         await client.send_photo(
             chat_id=message.from_user.id,
             photo=LOGO_URL,
-            caption=personal_message
+            caption=(
+                "💋Join for latest collection💋\n\n"
+                "• https://discord.com/invite/5ACnAvC2et\n" * 4 +
+                "\n🎬 How to use Discord: @HowToUse_Discord"
+            )
         )
     except Exception as e:
-        logger.error(f"Error in autoapprove handler: {e}")
+        logger.error(f"autoapprove error: {e}")
 
 @thanos.on_message(filters.command("stats") & filters.user(ownerid))
 async def stats(client: thanos, message: Message):
     users = len(await get_served_users())
-    await message.reply_text(
-        f"<u><b>ᴄᴜʀʀᴇɴᴛ sᴛᴀᴛs ᴏғ {client.me.mention} :</b></u>\n\n➻ <b>ᴜsᴇʀs :</b> {users}\n"
-    )
+    await message.reply_text(f"ᴜsᴇʀs ᴄᴏᴜɴᴛ: {users}")
 
 @thanos.on_message(filters.command("broadcast") & filters.user(ownerid))
 async def broadcast(cli: thanos, message: Message):
     if message.reply_to_message:
         x = message.reply_to_message.id
         y = message.chat.id
+    elif len(message.command) < 2:
+        return await message.reply_text("Reply to message or use: `/broadcast text`")
     else:
-        if len(message.command) < 2:
-            return await message.reply_text(
-                "<b>ᴇxᴀᴍᴘʟᴇ </b>:\n/broadcast [ᴍᴇssᴀɢᴇ] ᴏʀ [ʀᴇᴘʟʏ ᴛᴏ ᴀ ᴍᴇssᴀɢᴇ]"
-            )
         query = message.text.split(None, 1)[1]
 
     susr = 0
-    served_users = []
-    susers = await get_served_users()
-    for user in susers:
-        served_users.append(int(user["user_id"]))
+    served_users = [int(u["user_id"]) for u in await get_served_users()]
     for i in served_users:
         try:
-            m = (
+            if message.reply_to_message:
                 await cli.copy_message(chat_id=i, from_chat_id=y, message_id=x)
-                if message.reply_to_message
-                else await cli.send_message(i, text=query)
-            )
+            else:
+                await cli.send_message(i, text=query)
             susr += 1
             await asyncio.sleep(0.2)
         except FloodWait as e:
-            flood_time = int(e.value)
-            if flood_time > 200:
-                continue
-            await asyncio.sleep(flood_time)
+            await asyncio.sleep(min(e.value, 200))
         except:
             continue
+    await message.reply_text(f"Broadcasted to {susr} users.")
 
-    try:
-        await message.reply_text(f"<b>ʙʀᴏᴀᴅᴄᴀsᴛᴇᴅ ᴍᴇssᴀɢᴇ ᴛᴏ {susr} ᴜsᴇʀs.</b>")
-    except:
-        pass
+# Flask server for Render
+app = Flask(__name__)
+
+@app.route('/')
+def index():
+    return "Bot is running!"
+
+def run_flask():
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port)
 
 if __name__ == "__main__":
+    # Start Flask in background
+    Thread(target=run_flask).start()
+    # Start bot
     thanos.run()
-                  
