@@ -162,6 +162,38 @@ async def broadcast(cli: thanos, message: Message):
         except:
             continue
     await message.reply_text(f"Broadcasted to {susr} users.")
+    
+@thanos.on_message(filters.command("help"))
+async def help_command(client, message):
+    text = (
+        "**Available Commands:**\n\n"
+        "/start - Start the bot and see welcome message\n"
+        "/help - Show this help menu\n"
+        "/stats - Show user stats (owner only)\n"
+        "/broadcast - Send message to all users (owner only)\n"
+        "/info - Get your user info\n"
+        "/users - Show all user IDs (owner only)"
+    )
+    await message.reply_text(text)
+
+@thanos.on_message(filters.command("info"))
+async def info_command(client, message):
+    user = message.from_user
+    text = (
+        f"**User Info:**\n\n"
+        f"ID: `{user.id}`\n"
+        f"Name: `{user.first_name}`\n"
+        f"Username: @{user.username if user.username else 'N/A'}"
+    )
+    await message.reply_text(text)
+
+@thanos.on_message(filters.command("users") & filters.user(ownerid))
+async def list_users(client, message):
+    users = await get_served_users()
+    user_ids = [str(user["user_id"]) for user in users]
+    user_list = "\n".join(user_ids)
+    await message.reply_text(f"**Registered Users:**\n\n{user_list}")
+
 
 # Flask server for Render
 app = Flask(__name__)
