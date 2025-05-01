@@ -14,4 +14,4 @@ BOT_USERNAME = "Saini_auto_request_accept_bot"
 # your owner id
 ownerid = 7944235618
 #mongo db url
-DB_URI = "mongo uri"
+DB_URI = "mongodb+srv://kuldeepsaini83024:IEH4jBvsyWAdnUhY@cluster0.gfy3a.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
