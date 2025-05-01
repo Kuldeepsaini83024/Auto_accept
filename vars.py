@@ -4,14 +4,14 @@ import os
 
 
 # your bot token
-B_TOKEN = "6999255941:AAEJfdcjYo1N-BWAc1o9llCoimhX6dBPEr4"
+B_TOKEN = "7653429203:AAE5L8W5rSxB33W-Fj7GvOdfaCmupKHp9CY"
 #your api id
-API = 10248430
+API = 28235190
 # your api hash
-API_HASH = "42396a6ff14a569b9d59931643897d0d"
+API_HASH = "a685e1bccefafc462baf123cff9a1be3"
 # your bot username without @ like this ultron2_robot
-BOT_USERNAME = "AriseApproveBot"
+BOT_USERNAME = "Saini_auto_request_accept_bot"
 # your owner id
-ownerid = 6720082402
+ownerid = 7944235618
 #mongo db url
 DB_URI = "mongo uri"
