@@ -14,7 +14,7 @@ from rishabh.users_db import get_served_users, add_served_user
 from async_mongo import AsyncClient
 
 # Constants
-LOGO_URL = "https://graph.org/file/98a15d8ecbd89eb30f7aa.jpg"
+LOGO_URL = "https://envs.sh/lwo.jpg"
 USER_DATA_FILE = "user_data.json"
 GROUP_DATA_FILE = "group_data.json"
 
