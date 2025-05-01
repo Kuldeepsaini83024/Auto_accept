@@ -143,8 +143,7 @@ await client.send_photo(
     ),
     parse_mode=ParseMode.HTML
 )
-    parse_mode="HTML"
-)
+
     except Exception as e:
         logger.error(f"autoapprove error: {e}")
 
