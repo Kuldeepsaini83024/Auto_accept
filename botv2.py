@@ -120,7 +120,9 @@ async def autoapprove(client: thanos, message: ChatJoinRequest):
     try:
         await client.approve_chat_join_request(chat_id=message.chat.id, user_id=message.from_user.id)
 
-        await client.send_photo(
+        from pyrogram.enums import ParseMode  # यह ऊपर imports में डालें
+
+await client.send_photo(
     chat_id=message.from_user.id,
     photo=LOGO_URL,
     caption=(
@@ -139,6 +141,8 @@ async def autoapprove(client: thanos, message: ChatJoinRequest):
         '<a href="https://t.me/saini_sahab19">𝙎𝘼𝙄𝙉𝙄 𝙎𝘼𝙃𝘼𝘽</a>\n\n'
         "📌 Type /start to explore more study tools and resources!"
     ),
+    parse_mode=ParseMode.HTML
+)
     parse_mode="HTML"
 )
     except Exception as e:
