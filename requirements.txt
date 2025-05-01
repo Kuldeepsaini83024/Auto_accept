@@ -1,4 +1,7 @@
 pyrogram
+tgcrypto
+flask
+motor
 requests
 nano
 pymongo==4.3.3
